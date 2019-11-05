@@ -1,0 +1,9 @@
+__start__: compiled.out
+	./compiled.out
+
+compiled.out: 
+	g++ -std=c++17 game.cpp\
+			./source/*.cpp \
+			-o compiled.out 
+			
+
