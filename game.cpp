@@ -3,41 +3,83 @@
 #include<fstream>
 #include<list>
 #include <functional>
+#include <time.h>
 #include "headers/reportableObject.h"
 #include "headers/tile.h"
 #include "headers/board.h"
 #include "headers/mapDrawer.h"
-#include"headers/rotation.h"
+#include"headers/auxilliary.h"
+#include "headers/tilePoolManager.h"
 std::string tileFolder = "./tiles/";
 tile dummyTile(-1);
 
-int main(void) {
-    dummyTile.loadtile("empty.txt",tileRotation::x0);
+
+class game {
     board Board;
-    mapDrawer MapDrawer(Board);
-    Board.addTile("corridor1.txt", relativePosition::up, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::up);
-    Board.addTile("corridor2.txt", relativePosition::up, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::up);
-    Board.addTile("corridor2.txt", relativePosition::right, tileRotation::x1);
-    Board.changePositionOfParty(relativePosition::right);
-    Board.addTile("corridor1.txt", relativePosition::down, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::down);
-    Board.addTile("corridor1.txt", relativePosition::down, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::down);
-    Board.addTile("corridor2.txt", relativePosition::down, tileRotation::x2);
-    Board.changePositionOfParty(relativePosition::down);
-    Board.addTile("corridor1.txt", relativePosition::left, tileRotation::x1);
-    Board.changePositionOfParty(relativePosition::left);
-    Board.addTile("corridor2.txt", relativePosition::left, tileRotation::x3);
-    Board.changePositionOfParty(relativePosition::left);
-    Board.addTile("corridor1.txt", relativePosition::up, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::up);
-    Board.addTile("corridor1.txt", relativePosition::up, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::up);
-    Board.addTile("corridor1.txt", relativePosition::up, tileRotation::x0);
-    Board.changePositionOfParty(relativePosition::up);
-    MapDrawer.drawMap();
-    //Board.createBoard();
+    mapDrawer MapDrawer;
+    tilePoolManager TPM;
+public:
+    game():Board(),MapDrawer(Board),TPM(){}
+    void moveTeam(relativePosition rpos) {
+        auto response = Board.moveActionRequest(rpos);
+
+        switch (response)
+        {
+        case addTile:
+            Board.addTile(TPM.getNewTile(Board.getBoundariesOfNeighbourTile(rpos)), rpos);
+            Board.changePositionOfParty(rpos);
+            break;
+        case simpleMove:
+            Board.changePositionOfParty(rpos);
+            break;
+        case notAllowed:
+            std::cout << "illegal move" << std::endl;
+            break;
+        default:
+            break;
+        }
+
+    }
+    void draw() {
+        MapDrawer.drawMap();
+    }
+};
+
+
+relativePosition getTeamNextMove() {
+    char i = ' ';
+    std::cout << "RUCH" << std::endl;
+    std::cin >> i;
+    switch (i) {
+    case 'd':
+        return relativePosition::right;
+        break;
+    case 'w':
+        return relativePosition::up;
+        break;
+    case 'a':
+        return relativePosition::left;
+        break;
+    case 's':
+        return relativePosition::down;
+        break;
+    default:
+        return relativePosition::up;
+        break;
+    }
+}
+
+int main(void) {
+    srand(time(NULL));
+
+    dummyTile.loadTile("empty", { tileBoundaryType::clear,tileBoundaryType::clear,
+        tileBoundaryType::clear,tileBoundaryType::clear }, tileRotation::x0);
+  //  exit(0);
+    game Game;
+    while (true) {
+        Game.draw();
+        Game.moveTeam(getTeamNextMove());
+    }
+
   
 }

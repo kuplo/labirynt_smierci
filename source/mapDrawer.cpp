@@ -24,11 +24,12 @@ void mapDrawer::fillMapWithSingleTile(tile& Tile, unsigned startingX, unsigned s
     std::cout << startingX << ' ' << startingY << std::endl;
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
-            charMap[startingX + i][startingY + j] = Tile.shape[4-i][j];
-           // std::cout << charMap[startingX + i][startingY + j];
+            charMap[startingX + i][startingY + j] = Tile.shape[i][j];
+           std::cout << charMap[startingX + i][startingY + j];
         }
-     //   std::cout <<  std::endl;
+        std::cout <<  std::endl;
     }
+    std::cout << std::endl;
 }
 
 void mapDrawer::fillMap() {
@@ -43,11 +44,12 @@ void mapDrawer::fillMap() {
                 fillMapWithSingleTile(dummyTile, i  + abs(minX), j  + abs(minY));
             }
             else {
-                std::cout << "2 at point ";
+               std::cout << "2 at point ";
                 fillMapWithSingleTile(tileToDraw->second.get(), i + abs(minX), j +abs(minY) );
             }
         }
     }
+    charMap[Board.get().currentTeamPosition.first + 1 + abs(minX)][ Board.get().currentTeamPosition.second + 1 + abs(minY)]='T';
 }
 
 
@@ -58,8 +60,10 @@ mapDrawer::mapDrawer(const board& gameBoard) : Board(gameBoard) {
 void mapDrawer::drawMap() {
     deleteMap();
     auto& tileMapping = Board.get().tileMapping;
+    minX = minY = maxX = maxY = 0;
+    std::cout << "DRAWING" << std::endl;
     for (auto&[key, val] : tileMapping) {
-        std::cout << key.first << ' ' << key.second << std::endl;
+       std::cout << key.first << ' ' << key.second << std::endl;
         if (key.first > maxX)maxX = key.first;
         if (key.first < minX)minX = key.first;
         if (key.second > maxY)maxY = key.second;
@@ -73,13 +77,13 @@ void mapDrawer::drawMap() {
     if (mapSizeX != maxX - minX+5)mapSizeX = maxX - minX+5;
     if (mapSizeY != maxY - minY+5)mapSizeY = maxY - minY+5;
     reshapeMap();
-    std::cout << minX << ' ' << minY << " _ " << maxX << ' ' << maxY << std::endl;
-    std::cout << mapSizeX << ' ' << mapSizeY << std::endl;
+   std::cout << minX << ' ' << minY << " _ " << maxX << ' ' << maxY << std::endl;
+   std::cout << mapSizeX << ' ' << mapSizeY << std::endl;
     fillMap();
-
-    for (int i = mapSizeX-1; i >= 0; i--) {
-        for (int j = 0; j  <  mapSizeY; j++) {
-            std::cout << charMap[i][j] << ' ';
+    for (int j = 0; j < mapSizeY; j++) {
+        for (int i = 0; i < mapSizeX; i++) {
+       
+            std::cout << charMap[i][mapSizeY-j-1] << ' ';
         }
         std::cout <<  std::endl;
     }

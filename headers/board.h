@@ -5,19 +5,20 @@
 #include <functional>
 #include <iterator>
 #include <unordered_map>
+#include <array>
 #include "reportableObject.h"
 #include"tile.h"
-#include"rotation.h"
+#include"auxilliary.h"
 class mapDrawer;
 class tile;
 
-typedef std::pair< tile*, std::vector<std::reference_wrapper<tile>> > tileAndNeigbours;
+typedef std::pair< std::reference_wrapper<tile>, std::vector<std::reference_wrapper<tile>> > tileAndNeigbours;
 
 
 
 extern std::string tileFolder;
 extern tile dummyTile;
-enum relativePosition{right,up,left,down};
+
 
 template<> struct std::hash<std::pair<int, int>> {  
     std::size_t operator()(const std::pair<int, int>& k) const {
@@ -36,16 +37,23 @@ struct std::equal_to<std::pair<int, int>> {
 
 class board :public reportableObject {
     friend class mapDrawer;
-    static unsigned numberOfTiles;
+    tile* startingTile;
     std::list<tileAndNeigbours> listOfTilesAndNeighbours;
     std::pair<int, int> currentTeamPosition;
     std::unordered_map<std::pair<int, int>, std::reference_wrapper<tile>> tileMapping;
     
+    [[deprecated]]
     void linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2);
+
     void addTile(const std::string& fileName);
+
 public:
     board();
-    void addTile(const std::string& fileName, relativePosition relativePosition, tileRotation rot);
     ~board();
+    void addTile(tile& Tile, relativePosition rpos);
     void changePositionOfParty(relativePosition pos);
+    std::pair<int, int> getCurrentTeamPosition();
+    moveActionResponse moveActionRequest(relativePosition pos);
+    std::array<tileBoundaryType, 4> getBoundariesOfNeighbourTile(relativePosition rpos);
+    tile& getCurrentTile();
 };

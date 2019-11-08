@@ -1,0 +1,9 @@
+__start__: test
+	./test.out --log_level=test_suite
+
+test: 
+	g++ -std=c++17 -o test.out test.cpp  ./../source/*.cpp \
+		-lboost_unit_test_framework 
+	
+			
+
