@@ -10,16 +10,17 @@
 #include "headers/mapDrawer.h"
 #include"headers/auxilliary.h"
 #include "headers/tilePoolManager.h"
+#include "headers/terminalGUI.h"
 std::string tileFolder = "./tiles/";
-tile dummyTile(-1);
-
+tile dummyTile(-1, tileType::none);
 
 class game {
     board Board;
     mapDrawer MapDrawer;
     tilePoolManager TPM;
+    terminalGUI GUI;
 public:
-    game():Board(),MapDrawer(Board),TPM(){}
+    game():Board(),MapDrawer(Board),GUI(MapDrawer),TPM(){}
     void moveTeam(relativePosition rpos) {
         auto response = Board.moveActionRequest(rpos);
 
@@ -41,14 +42,17 @@ public:
 
     }
     void draw() {
-        MapDrawer.drawMap();
+        GUI.draw(Board.getCurrentTeamPosition());
+    }
+    void inspectCurrentTile() {
+        Board.getCurrentTile().resolveInspection();
     }
 };
 
 
 relativePosition getTeamNextMove() {
     char i = ' ';
-    std::cout << "RUCH" << std::endl;
+  //  std::cout << "RUCH" << std::endl;
     std::cin >> i;
     switch (i) {
     case 'd':
@@ -79,7 +83,9 @@ int main(void) {
     while (true) {
         Game.draw();
         Game.moveTeam(getTeamNextMove());
+        Game.inspectCurrentTile();
     }
-
+    //terminalGUI GUI;
+    //GUI.draw();
   
 }

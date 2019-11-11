@@ -1,19 +1,19 @@
 #include"./../headers/board.h"
 
-void board::linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2) {
-    tileAndNeigbours* t1 = NULL;
-    tileAndNeigbours* t2 = NULL;
-    for (auto& ptr : listOfTilesAndNeighbours) {
-        if (id1 == ptr.first.get().getId())t1 = &ptr;
-        if (id2 == ptr.first.get().getId())t2 = &ptr;
-    }
-    if (t1 == NULL || t2 == NULL) {
-        log(logType::ERROR, "error in pairing tiles: " + std::to_string(id1) + " and " + std::to_string(id1));
-        return;
-    }
-    t1->second[position1] = (t2->first).get();
-    t1->second[position2] = (t1->first).get();
-}
+//void board::linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2) {
+//    tileAndNeigbours* t1 = NULL;
+//    tileAndNeigbours* t2 = NULL;
+//    for (auto& ptr : listOfTilesAndNeighbours) {
+//        if (id1 == ptr.first.get().getId())t1 = &ptr;
+//        if (id2 == ptr.first.get().getId())t2 = &ptr;
+//    }
+//    if (t1 == NULL || t2 == NULL) {
+//        log(logType::ERROR, "error in pairing tiles: " + std::to_string(id1) + " and " + std::to_string(id1));
+//        return;
+//    }
+//    t1->second[position1] = (t2->first).get();
+//    t1->second[position2] = (t1->first).get();
+//}
 
 void changePosition(std::pair<int, int>& coords, relativePosition rpos) {
     switch (rpos)
@@ -38,9 +38,9 @@ void changePosition(std::pair<int, int>& coords, relativePosition rpos) {
 }
 
 void board::addTile(tile& Tile, relativePosition rpos) {
-    std::vector<std::reference_wrapper<tile>> listOfNeighbours;
-    for (int i = 0; i < 4; i++)listOfNeighbours.push_back(dummyTile);
-    listOfTilesAndNeighbours.push_back({ Tile, listOfNeighbours } );
+//    std::vector<std::reference_wrapper<tile>> listOfNeighbours;
+ //   for (int i = 0; i < 4; i++)listOfNeighbours.push_back(dummyTile);
+ //   listOfTilesAndNeighbours.push_back({ Tile, listOfNeighbours } );
     auto currentTile = tileMapping.find(currentTeamPosition)->second.get();
     std::pair<int, int> newTilePosition=currentTeamPosition;
     changePosition(newTilePosition, rpos);
@@ -50,12 +50,12 @@ void board::addTile(tile& Tile, relativePosition rpos) {
 
 
 void board::addTile(const std::string& fileName) {
-    std::vector<std::reference_wrapper<tile>> listOfNeighbours;
-    for (int i = 0; i < 4; i++)listOfNeighbours.push_back(dummyTile);
-    startingTile = new tile(0);
+  //  std::vector<std::reference_wrapper<tile>> listOfNeighbours;
+  //  for (int i = 0; i < 4; i++)listOfNeighbours.push_back(dummyTile);
+    startingTile = new tile(0,tileType::entrance);
     startingTile->loadTile(fileName, { tileBoundaryType::blocked,
         tileBoundaryType::corridor, tileBoundaryType::blocked, tileBoundaryType::blocked },tileRotation::x0);
-    listOfTilesAndNeighbours.push_back({ *startingTile, listOfNeighbours });
+  //  listOfTilesAndNeighbours.push_back({ *startingTile, listOfNeighbours });
     tileMapping.insert({ {0,0},*startingTile });
 }
 

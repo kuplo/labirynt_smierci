@@ -8,6 +8,7 @@
 #include <array>
 struct tilePool {
     unsigned amount;
+    tileType TileType;
     std::array<tileBoundaryType, 4> boundaries;
 };
 
@@ -15,8 +16,11 @@ struct tilePool {
 
 class tilePoolManager: public reportableObject {
     std::unordered_map < std::string, tilePool> entireTilePool;
-    std::list<tile> tileUsedOnBoard;
+    std::list<tile*> tileUsedOnBoard;
+    void addNewPool(std::string tName, unsigned number);
+    tile* tileCreator(int id, tileType tT);
 public:
     tile& getNewTile(std::array<tileBoundaryType, 4> boundaries);
     tilePoolManager();
+    ~tilePoolManager();
 };

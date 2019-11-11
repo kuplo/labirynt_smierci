@@ -1,12 +1,26 @@
 #include "./../headers/tile.h"
 
-tile::tile(int id) :id(id) {}
+tile::tile(int id,tileType tT) :id(id),TileType(tT) {}
 
 int&& tile::getId() { return std::move(id); }
-
+tileType tile::getTileType() { return TileType; }
 void tile::rotate90degrees() {
     int N = 5;
-    for (int i = 0; i < N / 2; i++) {
+    for (int x = 0; x < N / 2; x++)
+        for (int y = x; y < N - x - 1; y++)
+        {
+            char temp = shape[x][y];
+            shape[x][y] = shape[y][N - 1 - x];
+            shape[y][N - 1 - x] = shape[N - 1 - x][N - 1 - y];
+            shape[N - 1 - x][N - 1 - y] = shape[N - 1 - y][x];
+            shape[N - 1 - y][x] = temp;
+        }
+   
+
+
+
+
+  /*  for (int i = 0; i < N / 2; i++) {
         for (int j = i; j < N - i - 1; j++) {
             char temp = shape[i][j];
             shape[i][j] = shape[N - 1 - j][i];
@@ -14,7 +28,7 @@ void tile::rotate90degrees() {
             shape[N - 1 - i][N - 1 - j] = shape[j][N - 1 - i];
             shape[j][N - 1 - i] = temp;
         }
-    }
+    }*/
 }
 void tile::rotate(tileRotation rot) {
   /*  char temporary[5][5];
@@ -85,3 +99,27 @@ tileBoundaryType tile::getBoundary(relativePosition rel) {
         break;
     }
 }
+
+void tile::resolveInspection() {};
+tile::~tile() {};
+//############################################
+
+bool foundableObject::canBeInspected() { return !wasInspected; }
+//char foundableObject::objectSymbol() { return symbol; }
+//################################
+
+corridor::corridor(int id, tileType tT):tile(id,tT) {
+    wasInspected = true;
+}
+void corridor::resolveInspection() { std::cout << "inspecting corridor" << std::endl; };
+
+emptyRoom::emptyRoom(int id, tileType tT) :tile(id, tT) {
+    wasInspected = true;
+}
+void emptyRoom::resolveInspection() { std::cout << "inspecting emptyRoom" << std::endl; };
+
+fountain::fountain(int id, tileType tT) :tile(id, tT) {
+    wasInspected = true;
+}
+void fountain::resolveInspection() { std::cout << "inspecting fountain" << std::endl; };
+

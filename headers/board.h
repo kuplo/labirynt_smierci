@@ -38,12 +38,12 @@ struct std::equal_to<std::pair<int, int>> {
 class board :public reportableObject {
     friend class mapDrawer;
     tile* startingTile;
-    std::list<tileAndNeigbours> listOfTilesAndNeighbours;
+ //   std::list<tileAndNeigbours> listOfTilesAndNeighbours;
     std::pair<int, int> currentTeamPosition;
     std::unordered_map<std::pair<int, int>, std::reference_wrapper<tile>> tileMapping;
     
-    [[deprecated]]
-    void linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2);
+    //[[deprecated]]
+    //void linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2);
 
     void addTile(const std::string& fileName);
 

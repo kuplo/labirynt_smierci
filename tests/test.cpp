@@ -9,7 +9,7 @@
 #include "./../headers/tilePoolManager.h"
 
 std::string tileFolder = "./../tiles/";
-tile dummyTile(-1);
+tile dummyTile(-1, tileType::none);
 
 bool testBoundaries(tile& Tile, std::array<tileBoundaryType, 4> Boundaries) {
     std::array<tileBoundaryType, 4> tileBoundaries;
@@ -23,20 +23,25 @@ bool checkBoundariesOfCurrentTile(board& Board, std::array<tileBoundaryType, 4> 
     std::array<tileBoundaryType, 4> b2 = Board.getBoundariesOfNeighbourTile(relativePosition::up);
     std::array<tileBoundaryType, 4> b3 = Board.getBoundariesOfNeighbourTile(relativePosition::left);
     std::array<tileBoundaryType, 4> b4 = Board.getBoundariesOfNeighbourTile(relativePosition::down);
-    std::cout << b1[2] << ' ' << b2[3] << ' ' << b3[0] << ' ' << b4[1] << std::endl;
+  //  std::cout << b1[2] << ' ' << b2[3] << ' ' << b3[0] << ' ' << b4[1] << std::endl;
     std::array<tileBoundaryType, 4> currentTileBoundaries = {b1[2],b2[3],b3[0],b4[1]};
   //  std::array<tileBoundaryType, 4> expectedBoundaries = { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::blocked,tileBoundaryType::blocked };
     return expectedBoundaries == currentTileBoundaries;
+}
+void simulateCin(std::string text) {
+    std::streambuf* orig = std::cin.rdbuf();
+    std::istringstream input(text);
+    std::cin.rdbuf(input.rdbuf());
 }
 
 BOOST_AUTO_TEST_SUITE(tile_)
 BOOST_AUTO_TEST_CASE(tile_id)
 {
-    tile testTile(100);
+    tile testTile(100,tileType::none);
     BOOST_CHECK(testTile.getId() == 100);
 }
 BOOST_AUTO_TEST_CASE(tile_boundary_and_rotations) {
-    tile testTile(100);
+    tile testTile(100, tileType::none);
     std::array<tileBoundaryType, 4> Boundaries = { tileBoundaryType::blocked,tileBoundaryType::clear,tileBoundaryType::corridor,tileBoundaryType::passage };
     testTile.loadTile("empty", Boundaries, tileRotation::x0);
     BOOST_CHECK(testBoundaries(testTile,Boundaries));
@@ -48,6 +53,8 @@ BOOST_AUTO_TEST_CASE(tile_boundary_and_rotations) {
     BOOST_CHECK(testBoundaries(testTile, Boundaries));
 }
 BOOST_AUTO_TEST_SUITE_END()
+
+
 
 BOOST_AUTO_TEST_SUITE(board_)
 BOOST_AUTO_TEST_CASE(board_board) {
@@ -76,8 +83,8 @@ BOOST_AUTO_TEST_CASE(board_teamPosition) {
 }
 BOOST_AUTO_TEST_CASE(board_addTile) {
     board Board;
-    tile Tile(100);
-    Tile.loadTile("corridor3", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor },tileRotation::x0);
+    tile Tile(100, tileType::corridor);
+    Tile.loadTile("c_bcpc", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor },tileRotation::x0);
     Board.addTile(Tile,relativePosition::up);
     std::array<tileBoundaryType, 4> neighbourBoundaries = Board.getBoundariesOfNeighbourTile(relativePosition::up);
     std::array<tileBoundaryType, 4> boundaries = { tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::corridor };
@@ -86,20 +93,42 @@ BOOST_AUTO_TEST_CASE(board_addTile) {
     boundaries = { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor };
     BOOST_CHECK(checkBoundariesOfCurrentTile(Board, boundaries));
 }
+BOOST_AUTO_TEST_CASE(board_currentTile) {
+    board Board;
+    tile Tile(100, tileType::corridor);
+    Tile.loadTile("c_bcpc", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor }, tileRotation::x0);
+    Board.addTile(Tile, relativePosition::up);
+    Board.changePositionOfParty(relativePosition::up);
+    tile Tile2(101, tileType::corridor);
+    Tile2.loadTile("c_bcpc", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor }, tileRotation::x2);
+    Board.addTile(Tile2, relativePosition::left);
+    Board.changePositionOfParty(relativePosition::left);
+    BOOST_CHECK(Tile2.getId() == Board.getCurrentTile().getId());
+}
+
 BOOST_AUTO_TEST_CASE(board_moveActionRequest) {
     board Board;
     auto action = Board.moveActionRequest(relativePosition::up);
     BOOST_CHECK(action == moveActionResponse::addTile);
     action = Board.moveActionRequest(relativePosition::right);
     BOOST_CHECK(action == moveActionResponse::notAllowed);
-    tile Tile(100);
-    Tile.loadTile("corridor3", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor }, tileRotation::x0);
+    tile Tile(100, tileType::corridor);
+    Tile.loadTile("c_bcpc", { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::passage,tileBoundaryType::corridor }, tileRotation::x0);
     Board.addTile(Tile, relativePosition::up);
     Board.changePositionOfParty(relativePosition::up);
     action = Board.moveActionRequest(relativePosition::down);
     BOOST_CHECK(action == moveActionResponse::simpleMove);
 }
+BOOST_AUTO_TEST_SUITE_END()
 
-
+BOOST_AUTO_TEST_SUITE(tilePoolManager_)
+BOOST_AUTO_TEST_CASE(tilePoolManager_boundaries) {
+    tilePoolManager TP;
+    std::array<tileBoundaryType, 4> boundaries = { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::blocked,tileBoundaryType::corridor };
+    simulateCin("0");
+    auto tile =TP.getNewTile(boundaries);
+    BOOST_CHECK(testBoundaries(tile, boundaries));
+//BOOST_CHECK(true);
+}
 BOOST_AUTO_TEST_SUITE_END()
 
