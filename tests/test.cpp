@@ -7,7 +7,8 @@
 #include "./../headers/reportableObject.h"
 #include "./../headers/tile.h"
 #include "./../headers/tilePoolManager.h"
-
+#include "./../headers/playableCharacter.h"
+#include "./../headers/trapResolver.h"
 std::string tileFolder = "./../tiles/";
 tile dummyTile(-1, tileType::none);
 
@@ -29,10 +30,12 @@ bool checkBoundariesOfCurrentTile(board& Board, std::array<tileBoundaryType, 4> 
     return expectedBoundaries == currentTileBoundaries;
 }
 void simulateCin(std::string text) {
+    static std::istringstream input;
+    input.str(text);
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input(text);
     std::cin.rdbuf(input.rdbuf());
 }
+
 
 BOOST_AUTO_TEST_SUITE(tile_)
 BOOST_AUTO_TEST_CASE(tile_id)
@@ -125,10 +128,66 @@ BOOST_AUTO_TEST_SUITE(tilePoolManager_)
 BOOST_AUTO_TEST_CASE(tilePoolManager_boundaries) {
     tilePoolManager TP;
     std::array<tileBoundaryType, 4> boundaries = { tileBoundaryType::blocked,tileBoundaryType::corridor,tileBoundaryType::blocked,tileBoundaryType::corridor };
-    simulateCin("0");
+    simulateCin("2");
     auto tile =TP.getNewTile(boundaries);
+   
     BOOST_CHECK(testBoundaries(tile, boundaries));
-//BOOST_CHECK(true);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(playableCharacter_)
+BOOST_AUTO_TEST_CASE(playableCharacter_miscellaneous) {
+    playableCharacter pl;
+    pl.strength = 3;
+    pl.assignDamage(1);
+    BOOST_CHECK(pl.strength == 2);
+    BOOST_CHECK(!pl.isAffectedBy(characterModifiers::death));
+    pl.assignDamage(2);
+    BOOST_CHECK(pl.isAffectedBy(characterModifiers::death));
+    pl.abilities[characterAbilities::darkGate] = 2;
+    BOOST_CHECK(pl.haveAbility(characterAbilities::darkGate));
+    BOOST_CHECK(pl.getAbilityLevel(characterAbilities::darkGate)==2);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(dice_test)
+BOOST_AUTO_TEST_CASE(dice_Correctness) {
+    dice6(1);
+    dice6(4);
+    dice6(6);
+    BOOST_CHECK(1 == dice6());
+    BOOST_CHECK(4 == dice6());
+    dice6(5);
+    BOOST_CHECK(6 == dice6());
+    BOOST_CHECK(5 == dice6());
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(trapResolver_)
+BOOST_AUTO_TEST_CASE(trapResolver_check) {
+    playableCharacter pl;
+    pl.strength = 3;
+    pl.abilities[characterAbilities::trapDismantle] = 2;
+    playableCharacter pl2;
+    pl2.strength = 3;
+    std::vector<playableCharacter> team;
+    team.push_back(pl);
+    team.push_back(pl2);
+    dice6(1);
+    simulateCin("0");
+    dice6(1);
+    dice6(5);
+    trapResolver::resolvePassageTrap(team[1],team);
+    BOOST_CHECK(team[0].strength == 3);
+    dice6();
+
+    dice6(1);
+    dice6(5);
+    dice6(4);
+    dice3(6);
+    simulateCin("0");
+    trapResolver::resolvePassageTrap(team[1], team);
+    BOOST_CHECK(team[0].strength == 2 && team[1].strength == 2);
 }
 BOOST_AUTO_TEST_SUITE_END()
 

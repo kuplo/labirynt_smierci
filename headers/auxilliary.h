@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream> 
 #include <random>
+#include <queue>
 enum tileRotation { x0, x1, x2,x3 };
 enum class tileBoundaryType {corridor,passage,blocked,clear};
 enum relativePosition { right, up, left, down ,center};
@@ -12,6 +13,6 @@ enum class tileType {none,entrance,corridor,emptyRoom,fountain,figure,trapDoor,m
 void rotateTileBoundaryTypeArray(std::array<tileBoundaryType, 4>& boundaries);
 extern std::stringstream GUIstream;
 //class test_class;
-unsigned dice6();
-unsigned dice3();
+unsigned dice6(int nextResult=-1);
+unsigned dice3(int nextResult=-1);
 

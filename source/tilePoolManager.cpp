@@ -9,6 +9,7 @@ tilePoolManager::tilePoolManager() {
     addNewPool("c_bcpc", 10);
     addNewPool("r_pbbb", 10);
     addNewPool("f_pbbp", 10);
+    log(logType::INFO, "tilePools inited");
 }
 
 
@@ -42,11 +43,14 @@ tile* tilePoolManager::tileCreator(int id, tileType tT) {
         break;
     case tileType::corridor:
         tmp =dynamic_cast<tile*>( new corridor(id, tT) );
+        log(logType::INFO, "created new corridor type tile");
         break;
     case tileType::emptyRoom:
         tmp = dynamic_cast<tile*>(new emptyRoom(id, tT));
+        log(logType::INFO, "created new emptyRoom type tile");
         break;
     case tileType::fountain:
+        log(logType::INFO, "created new fountain type tile");
         tmp = dynamic_cast<tile*>(new fountain(id, tT));
         break;
     case tileType::figure:
@@ -78,27 +82,28 @@ tile& tilePoolManager::getNewTile(std::array<tileBoundaryType, 4> boundaries) {
         amountInPools += value.amount;
     }
     unsigned fate = rand() % amountInPools;
-    tilePool choosenTilePool;
+    tilePool* choosenTilePool;
     std::string tileName="";
     amountInPools = 0;
     for (auto&[key, value] : entireTilePool) {
         if (value.amount == 0)continue;
         amountInPools += value.amount;
         if (amountInPools >= fate) {
-            choosenTilePool = value;
+            choosenTilePool = &value;
             tileName = key;
             break;
         }
     }
     std::vector<tileRotation> matchingRotations;
     for (int i = 0; i < 4; i++) {
-        if (checkifTileFitOnBoard(boundaries, choosenTilePool.boundaries))matchingRotations.push_back(static_cast<tileRotation>(i));
-        rotateTileBoundaryTypeArray(choosenTilePool.boundaries);
+        if (checkifTileFitOnBoard(boundaries, choosenTilePool->boundaries))matchingRotations.push_back(static_cast<tileRotation>(i));
+        rotateTileBoundaryTypeArray(choosenTilePool->boundaries);
     }
   //  exit(0);
     if (!matchingRotations.size()) {
         if (retries == 100) {
             retries = 0;
+            log(logType::WARNING, "can't get suitable tile");
             std::cout << "Cant get matching tile in that direction" << std::endl;
             exit(0);
         }
@@ -114,12 +119,11 @@ tile& tilePoolManager::getNewTile(std::array<tileBoundaryType, 4> boundaries) {
     std::cout << " choose" << std::endl;
     unsigned choice;
     std::cin >> choice;
- 
-
-    tile* Tile = tileCreator(tileUsedOnBoard.size() + 1, choosenTilePool.TileType);
-    Tile->loadTile(tileName, choosenTilePool.boundaries, static_cast<tileRotation>(choice));
-    choosenTilePool.amount--;
-  //  std::cout << "dupa" << std::endl;
+    
+    std::cout << choice << std::endl;
+    tile* Tile = tileCreator(tileUsedOnBoard.size() + 1, choosenTilePool->TileType);
+    Tile->loadTile(tileName, choosenTilePool->boundaries, static_cast<tileRotation>(choice));
+    choosenTilePool->amount--;
     return *Tile;
 }
 

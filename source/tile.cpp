@@ -76,6 +76,7 @@ void tile::loadTile(const std::string& fileName,std::array<tileBoundaryType,4> p
         tileFile.close();
         boundaries = preRotationBoundaries;
         rotate(rot);
+        log(logType::INFO, "tile loaded with name " + fileName + " with rotation " + std::to_string(int(rot)));
     }
     else log(logType::ERROR, "cant open file: " + fileName);
 }
