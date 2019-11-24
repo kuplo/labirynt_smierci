@@ -22,7 +22,7 @@ void reportableObject::log(logType ltype, std::string ltext) {
         break;
     }
 
-    logFile << ltext << std::endl;
+    logFile << objectName <<": "<< ltext << std::endl;
 }
 
  reportableObject* reportableObject::logObj=NULL;

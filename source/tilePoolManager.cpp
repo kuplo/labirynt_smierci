@@ -4,6 +4,7 @@
 
 
 tilePoolManager::tilePoolManager() {
+    objectName = "tilePoolManager";
     addNewPool("c_bcbc", 10);
     addNewPool("c_cbbc", 10);
     addNewPool("c_bcpc", 10);

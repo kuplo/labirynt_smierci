@@ -14,8 +14,8 @@
 #include "headers/terminalGUI.h"
 #include "headers/playableCharacter.h"
 #include "headers/trapResolver.h"
-
-enum class turnPhase {init,move,passageTrap,monsterEncounter,tileInspection,exit};
+#include "headers/monsterEncounter.h"
+enum class turnPhase {init,move,passageTrap,monsterEncounter, battle,tileInspection,exit};
 std::string tileFolder = "./tiles/";
 tile dummyTile(-1, tileType::none);
 bool run_game = true;
@@ -53,10 +53,12 @@ class game : public reportableObject{
     terminalGUI GUI;
     std::vector<playableCharacter> team;
     playableCharacter* currentTeamLeader;
-    void temporaryCharacter() {
+    std::vector < std::vector<std::reference_wrapper<playableCharacter> > >marchOrder;
+    dominantSuns dominantSun;
+    void temporaryCharacter(std::string name) {
         playableCharacter temp;
         temp.type = characterType::adept;
-        temp.name = "test character";
+        temp.name = name;
         temp.experience = 0;
         temp.gold = 0;
         temp.jewelry = 0;
@@ -66,11 +68,28 @@ class game : public reportableObject{
         temp.strength = 2;
         temp.weapons.push_back(weaponType::bow);
         temp.abilities[characterAbilities::trapDismantle] = 1;
+
         team.push_back(temp);
     }
+    void setMarchingOrder() {
+        marchOrder.push_back(std::vector<std::reference_wrapper<playableCharacter> >());
+        marchOrder.push_back(std::vector<std::reference_wrapper<playableCharacter> >());
+        marchOrder[0].push_back(team[1]);
+        marchOrder[0].push_back(team[2]);
+        marchOrder[1].push_back(team[0]);
+    }
+    void setDominantSun() {
+        unsigned result = dice3();
+        if (result == 1)dominantSun = dominantSuns::redSun;
+        if (result == 1)dominantSun = dominantSuns::yellowSun;
+        if (result == 1)dominantSun = dominantSuns::blueSun;
+    }
+
 public:
     game():Board(),MapDrawer(Board),GUI(MapDrawer),TPM(){ 
-        temporaryCharacter();
+        temporaryCharacter("test1");
+        temporaryCharacter("test2");
+        temporaryCharacter("test3");
         currentTeamLeader = &(*team.begin());
         phaseOrder.push(turnPhase::init);
     }
@@ -109,15 +128,15 @@ public:
         Board.getCurrentTile().resolveInspection();
     }
 
-    void resolveMonsterEncounter() {
-       // std::cout << "BOOOOOO" << std::endl;
-    }
+   
     void resolveNextPhase() {
         turnPhase nextPhase = phaseOrder.front();
         phaseOrder.pop();
         switch (nextPhase)
         {
         case turnPhase::init:
+            setMarchingOrder();
+            setDominantSun();
             log(logType::INFO, "Game Is Starting");
             phaseOrder.push(turnPhase::move);
             draw();
@@ -134,7 +153,14 @@ public:
             break;
         case turnPhase::monsterEncounter:
             log(logType::INFO, "Monster encounter phase");
-            resolveMonsterEncounter();
+            monsterEncounter::resolveMonsterEncounter(Board.getCurrentTile());
+            if (Board.getCurrentTile().isOccupiedByMonsters()) {
+                draw();
+                phaseOrder.push(turnPhase::battle);
+            }
+            break;
+        case turnPhase::battle:
+            log(logType::INFO, "Battle!");
             break;
         case turnPhase::tileInspection:
             log(logType::INFO, "Tile inspection phase");

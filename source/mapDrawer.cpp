@@ -29,6 +29,7 @@ void mapDrawer::fillMapWithSingleTile(tile& Tile, unsigned startingX, unsigned s
         }
      //   std::cout <<  std::endl;
     }
+    if (Tile.isOccupiedByMonsters())  charMap[startingX + 3][startingY + 3] = 'M';
    // std::cout << std::endl;
 }
 

@@ -1,11 +1,11 @@
 #pragma once
 #include "reportableObject.h"
+#include "auxilliary.h"
 #include <unordered_map>
 #include <set>
 #include <list>
 enum class characterType{hero,adept};
 enum class characterRace{elf,dwarf,human};
-enum class weaponType{bow,axe,sword};
 enum class characterAbilities {charisma,trapDismantle,darkGate};
 enum class characterModifiers{death};
 class playableCharacter : public reportableObject {

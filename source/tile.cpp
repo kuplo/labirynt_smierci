@@ -1,6 +1,6 @@
 #include "./../headers/tile.h"
 
-tile::tile(int id,tileType tT) :id(id),TileType(tT) {}
+tile::tile(int id, tileType tT) :id(id), TileType(tT) { objectName = "tile" + std::to_string(id); }
 
 int&& tile::getId() { return std::move(id); }
 tileType tile::getTileType() { return TileType; }
@@ -100,6 +100,18 @@ tileBoundaryType tile::getBoundary(relativePosition rel) {
         break;
     }
 }
+
+bool tile::isaFirstEnter() { return !wasEnteredBefore; }
+void tile::changeWasEnteredBeforeStatus() { wasEnteredBefore = true; }
+
+bool tile::isOccupiedByMonsters() {
+    if (monstersOnTile.size() == 0)return false;
+    else return true;
+}
+void  tile::addMonster(monster Monster) {
+    monstersOnTile.push_back(Monster);
+}
+
 
 void tile::resolveInspection() {};
 tile::~tile() {};

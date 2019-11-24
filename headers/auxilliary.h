@@ -9,10 +9,14 @@ enum class tileBoundaryType {corridor,passage,blocked,clear};
 enum relativePosition { right, up, left, down ,center};
 enum moveActionResponse {addTile,simpleMove,notAllowed};
 enum class tileType {none,entrance,corridor,emptyRoom,fountain,figure,trapDoor,mirror,furniture,altar,art,stairs};
-//enum class GUIstate {};
+enum class dominantSuns {redSun,yellowSun,blueSun};
+
+enum class weaponType { dagger, knife,bow, sword,hammer,axe, monster };
+
 void rotateTileBoundaryTypeArray(std::array<tileBoundaryType, 4>& boundaries);
 extern std::stringstream GUIstream;
 //class test_class;
 unsigned dice6(int nextResult=-1);
 unsigned dice3(int nextResult=-1);
+
 

@@ -4,6 +4,7 @@
 #include<list>
 #include"mapDrawer.h"
 #include"auxilliary.h"
+#include"monster.h"
 #include <array>
 extern std::string tileFolder;
 class mapDrawer;
@@ -30,7 +31,8 @@ class tile : public reportableObject {
     std::array<tileBoundaryType,4> boundaries;
     void rotate90degrees();
     tileType TileType;
-   // foundableObject* object;
+    std::list<monster> monstersOnTile;
+    bool wasEnteredBefore = false;
 public:
     tile(int id,tileType tT);
     void loadTile(const std::string& fileName, std::array<tileBoundaryType, 4> preRotationBoundaries,tileRotation rot);
@@ -38,6 +40,13 @@ public:
     int&& getId();
     tileType getTileType();
     tileBoundaryType getBoundary(relativePosition rel);
+
+    bool isaFirstEnter();
+    void changeWasEnteredBeforeStatus();
+
+    bool isOccupiedByMonsters();
+    void addMonster(monster Monster);
+
     virtual void resolveInspection();
     virtual ~tile();
 };

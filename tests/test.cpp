@@ -9,6 +9,8 @@
 #include "./../headers/tilePoolManager.h"
 #include "./../headers/playableCharacter.h"
 #include "./../headers/trapResolver.h"
+#include "./../headers/monster.h"
+#include "./../headers/monsterEncounter.h"
 std::string tileFolder = "./../tiles/";
 tile dummyTile(-1, tileType::none);
 
@@ -191,3 +193,50 @@ BOOST_AUTO_TEST_CASE(trapResolver_check) {
 }
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE(monsterEncounter_)
+BOOST_AUTO_TEST_CASE(monsterEncounter_corridor) {
+    tilePoolManager tpManager;
+    std::array<tileBoundaryType, 4> Boundaries = { tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::clear };
+    tile* corridorTile;
+    while (true) {
+        simulateCin("0");
+        corridorTile = &tpManager.getNewTile(Boundaries);
+        if (corridorTile->getTileType() == tileType::corridor) { break; }
+    }
+    dice6(2);
+    monsterEncounter::resolveMonsterEncounter(*corridorTile);
+    BOOST_CHECK(!corridorTile->isOccupiedByMonsters());
+    dice6(1);
+    monsterEncounter::resolveMonsterEncounter(*corridorTile);
+    BOOST_CHECK(corridorTile->isOccupiedByMonsters());
+    
+}
+BOOST_AUTO_TEST_CASE(monsterEncounter_room) {
+    tilePoolManager tpManager;
+    std::array<tileBoundaryType, 4> Boundaries = { tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::clear,tileBoundaryType::clear };
+    tile* roomTile;
+    while (true) {
+        simulateCin("0");
+        roomTile = &tpManager.getNewTile(Boundaries);
+        if (roomTile->getTileType() != tileType::corridor) { break; }
+    }
+    dice6(2);
+    monsterEncounter::resolveMonsterEncounter(*roomTile);
+    BOOST_CHECK(roomTile->isOccupiedByMonsters());
+
+    while (true) {
+        simulateCin("0");
+        roomTile = &tpManager.getNewTile(Boundaries);
+        if (roomTile->getTileType() != tileType::corridor) { break; }
+    }
+    dice6(5);
+    monsterEncounter::resolveMonsterEncounter(*roomTile);
+    BOOST_CHECK(!roomTile->isOccupiedByMonsters());
+    dice6(2);
+    monsterEncounter::resolveMonsterEncounter(*roomTile);
+    BOOST_CHECK(!roomTile->isOccupiedByMonsters());
+    dice6(1);
+    monsterEncounter::resolveMonsterEncounter(*roomTile);
+    BOOST_CHECK(roomTile->isOccupiedByMonsters());
+}
+BOOST_AUTO_TEST_SUITE_END()
