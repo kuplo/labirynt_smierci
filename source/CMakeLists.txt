@@ -1,0 +1,14 @@
+add_library(LabirynthCore
+	auxilliary.cpp       
+	mapDrawer.cpp          
+	terminalGUI.cpp
+	board.cpp            
+	monster.cpp            
+	tile.cpp
+	cmake_install.cmake  
+	monsterEncounter.cpp   
+	tilePoolManager.cpp       
+	playableCharacter.cpp  
+	trapResolver.cpp
+    reportableObject.cpp
+)
