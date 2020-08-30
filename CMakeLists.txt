@@ -10,11 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(source)
 
-target_include_directories(LabirynthCore PUBLIC
-                          "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/headers"
-                          )
-                          
-  add_executable(LabirynthOfDeath ${PROJECT_SOURCE_DIR}/game.cpp)
-  
-  target_link_libraries(LabirynthOfDeath PUBLIC LabirynthCore)
+include_directories(${PROJECT_SOURCE_DIR}/headers)
+add_executable(${PROJECT_NAME}  ${PROJECT_SOURCE_DIR}/game.cpp)
+
+target_link_libraries(${PROJECT_NAME} LabirynthCore)
