@@ -8,7 +8,7 @@ monster monsterEncounter::testMonster() {
     return newMonster;
 }
 
-bool monsterEncounter::isMonsterEncountered(tile& currentTile) {
+bool monsterEncounter::isMonsterDrawn(tile& currentTile) {
     tileType type= currentTile.getTileType();
 
     //no encounter tiles
@@ -35,23 +35,24 @@ bool monsterEncounter::isMonsterEncountered(tile& currentTile) {
 
 void monsterEncounter::resolveMonsterEncounter(tile& currentTile) {
     bool encountered = false;
-    if (currentTile.isOccupiedByMonsters()) {
+
+    if (currentTile.isOccupiedByMonsters())
+    {
         logger.log(logType::INFO, "tile already occupied");
         encountered = true;
     }
-    else { 
-        bool newEncounter = isMonsterEncountered(currentTile);
-        if (newEncounter) {
-            logger.log(logType::INFO, "new monster on tile");
-            currentTile.addMonster(testMonster());
+    else
+    {
+        if (encountered = isMonsterDrawn(currentTile);encountered)
+        {
+        	logger.log(logType::INFO, "new monster on tile");
+        	currentTile.addMonster(testMonster());
         }
-        encountered = newEncounter;
     }
-    if (encountered) {
-        logger.log(logType::INFO, "monster has been encountered");
-        currentTile.changeWasEnteredBeforeStatus(); //temporary
-        return;
-    }
-    currentTile.changeWasEnteredBeforeStatus(); //temporary
-    logger.log(logType::INFO, "no monster. proceeding to next phase");
+
+    encountered ? logger.log(logType::INFO, "monster has been encountered"):
+    		logger.log(logType::INFO, "no monster. proceeding to next phase");
+
+    currentTile.changeWasEnteredBeforeStatus();
+    return;
 }

@@ -7,7 +7,7 @@
 class monsterEncounter:public reportableObject {
     static monster testMonster();
     static reportableObject logger;
-    static bool isMonsterEncountered(tile& currentTile);
+    static bool isMonsterDrawn(tile& currentTile);
 public:
     static void resolveMonsterEncounter(tile& currentTile);
 };

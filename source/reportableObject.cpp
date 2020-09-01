@@ -1,6 +1,6 @@
 #include "./../headers/reportableObject.h"
 
-void reportableObject::log(logType ltype, std::string ltext) {
+void reportableObject::log(logType ltype,const std::string& ltext) {
     if (logObj == NULL) {
         logObj = this;
         logFile.open(logName);
@@ -22,7 +22,7 @@ void reportableObject::log(logType ltype, std::string ltext) {
         break;
     }
 
-    logFile << objectName <<": "<< ltext << std::endl;
+    logFile << objectName << ": " <<  ltext << std::endl;
 }
 
  reportableObject* reportableObject::logObj=NULL;

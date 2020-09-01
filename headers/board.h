@@ -40,7 +40,7 @@ class board :public reportableObject {
     tile* startingTile;
  //   std::list<tileAndNeigbours> listOfTilesAndNeighbours;
     std::pair<int, int> currentTeamPosition;
-    std::unordered_map<std::pair<int, int>, std::reference_wrapper<tile>> tileMapping;
+    //std::unordered_map<std::pair<int, int>, std::reference_wrapper<tile>> tileMapping;
     
     //[[deprecated]]
     //void linkTwoTiles(int id1, relativePosition position1, int id2, relativePosition position2);
@@ -48,6 +48,8 @@ class board :public reportableObject {
     void addTile(const std::string& fileName);
 
 public:
+    std::unordered_map<std::pair<int, int>, std::reference_wrapper<tile>> tileMapping; //TODO do zmiany
+
     board();
     ~board();
     void addTile(tile& Tile, relativePosition rpos);

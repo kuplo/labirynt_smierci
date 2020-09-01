@@ -99,6 +99,8 @@ tileBoundaryType tile::getBoundary(relativePosition rel) {
     default:
         break;
     }
+    log(logType::ERROR,"bad position");
+    return tileBoundaryType::clear;
 }
 
 bool tile::isaFirstEnter() { return !wasEnteredBefore; }

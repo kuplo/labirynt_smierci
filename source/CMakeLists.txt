@@ -1,6 +1,5 @@
-add_library(LabirynthCore STATIC auxilliary.cpp
-	mapDrawer.cpp       
-	terminalGUI.cpp
+add_library(LabirynthCore STATIC 
+	auxilliary.cpp
 	board.cpp            
 	monster.cpp            
 	tile.cpp

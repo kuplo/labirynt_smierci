@@ -2,7 +2,6 @@
 #include "reportableObject.h"
 #include<fstream>
 #include<list>
-#include"mapDrawer.h"
 #include"auxilliary.h"
 #include"monster.h"
 #include <array>
@@ -27,13 +26,14 @@ public:
 class tile : public reportableObject {
     friend class mapDrawer;
     int id;
-    char shape[5][5];
+    //char shape[5][5];
     std::array<tileBoundaryType,4> boundaries;
     void rotate90degrees();
     tileType TileType;
     std::list<monster> monstersOnTile;
     bool wasEnteredBefore = false;
 public:
+    char shape[5][5]; //TODO zmienic
     tile(int id,tileType tT);
     void loadTile(const std::string& fileName, std::array<tileBoundaryType, 4> preRotationBoundaries,tileRotation rot);
     void rotate(tileRotation rot);

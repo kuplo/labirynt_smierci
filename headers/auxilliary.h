@@ -13,6 +13,8 @@ enum class dominantSuns {redSun,yellowSun,blueSun};
 
 enum class weaponType { dagger, knife,bow, sword,hammer,axe, monster };
 
+enum class turnPhase {init,move,passageTrap,monsterEncounter, battle,tileInspection,exit};
+
 void rotateTileBoundaryTypeArray(std::array<tileBoundaryType, 4>& boundaries);
 extern std::stringstream GUIstream;
 //class test_class;

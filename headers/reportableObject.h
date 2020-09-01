@@ -11,6 +11,6 @@ protected:
     std::string objectName;
 public:
     enum logType { INFO, WARNING, ERROR, UNKNOWN };
-    void log(logType ltype, std::string ltext);
+    void log(logType ltype,const std::string& ltext);
     ~reportableObject();
 };

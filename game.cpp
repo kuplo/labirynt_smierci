@@ -8,14 +8,14 @@
 #include "headers/reportableObject.h"
 #include "headers/tile.h"
 #include "headers/board.h"
-#include "headers/mapDrawer.h"
 #include"headers/auxilliary.h"
 #include "headers/tilePoolManager.h"
-#include "headers/terminalGUI.h"
 #include "headers/playableCharacter.h"
 #include "headers/trapResolver.h"
 #include "headers/monsterEncounter.h"
-enum class turnPhase {init,move,passageTrap,monsterEncounter, battle,tileInspection,exit};
+
+#include "TerminalIO/headers/TerminalGUI.h"
+
 std::string tileFolder = "./tiles/";
 tile dummyTile(-1, tileType::none);
 bool run_game = true;
@@ -48,9 +48,8 @@ class game : public reportableObject{
 
     std::queue<turnPhase> phaseOrder;
     board Board;
-    mapDrawer MapDrawer;
     tilePoolManager TPM;
-    terminalGUI GUI;
+    TerminalGUI m_TerminalGUI;
     std::vector<playableCharacter> team;
     playableCharacter* currentTeamLeader;
     std::vector < std::vector<std::reference_wrapper<playableCharacter> > >marchOrder;
@@ -86,7 +85,10 @@ class game : public reportableObject{
     }
 
 public:
-    game():Board(),MapDrawer(Board),GUI(MapDrawer),TPM(){ 
+    game():Board(), m_TerminalGUI(),TPM(){
+    	std::unique_ptr<MapDrawer> pMapDrawer = std::make_unique<MapDrawer>(Board);
+    	m_TerminalGUI.setDrawer(std::move(pMapDrawer));
+
         temporaryCharacter("test1");
         temporaryCharacter("test2");
         temporaryCharacter("test3");
@@ -122,7 +124,7 @@ public:
  
     }
     void draw() {
-        GUI.draw(Board.getCurrentTeamPosition());
+    	m_TerminalGUI.refreshScreen();
     }
     void resolveTileInspection() {
         Board.getCurrentTile().resolveInspection();
@@ -160,7 +162,8 @@ public:
             }
             break;
         case turnPhase::battle:
-            log(logType::INFO, "Battle!");
+            log(logType::INFO, "Battle phase");
+
             break;
         case turnPhase::tileInspection:
             log(logType::INFO, "Tile inspection phase");
