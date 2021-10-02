@@ -15,6 +15,7 @@
 #include "headers/monsterEncounter.h"
 
 #include "TerminalIO/headers/TerminalGUI.h"
+#include "TerminalIO/headers/TerminalIOProxy.h"
 
 std::string tileFolder = "./tiles/";
 tile dummyTile(-1, tileType::none);
@@ -22,9 +23,7 @@ bool run_game = true;
 
 
 relativePosition getTeamNextMove() {
-    char i = ' ';
-    //  std::cout << "RUCH" << std::endl;
-    std::cin >> i;
+    char i = TerminalIOproxy::getRef().getInput();
     switch (i) {
     case 'd':
         return relativePosition::right;
@@ -50,6 +49,7 @@ class game : public reportableObject{
     board Board;
     tilePoolManager TPM;
     TerminalGUI m_TerminalGUI;
+    TerminalIOproxy m_terminalIOProxy;
     std::vector<playableCharacter> team;
     playableCharacter* currentTeamLeader;
     std::vector < std::vector<std::reference_wrapper<playableCharacter> > >marchOrder;
@@ -86,6 +86,12 @@ class game : public reportableObject{
 
 public:
     game():Board(), m_TerminalGUI(),TPM(){
+        m_terminalIOProxy.registerInputCallback(
+            [this]()-> char {return m_TerminalGUI.getCharInput();});
+        m_terminalIOProxy.registerOutputCallback(
+            [this](std::string const & str, bool bForceUpdate)-> void { m_TerminalGUI.addInfo(str, bForceUpdate);});
+
+
     	std::unique_ptr<MapDrawer> pMapDrawer = std::make_unique<MapDrawer>(Board);
     	m_TerminalGUI.setDrawer(std::move(pMapDrawer));
 
@@ -94,6 +100,7 @@ public:
         temporaryCharacter("test3");
         currentTeamLeader = &(*team.begin());
         phaseOrder.push(turnPhase::init);
+        m_TerminalGUI.startRendering();
     }
     void moveTeam(relativePosition rpos) {
         auto response = Board.moveActionRequest(rpos);
@@ -115,7 +122,7 @@ public:
             break;
         case notAllowed:
             log(logType::INFO, "received not allowed response");
-            std::cout << "illegal move" << std::endl;
+            TerminalIOproxy::getRef().pushOutput("Illegal Move", false);
             phaseOrder.push(turnPhase::move);
             break;
         default:
@@ -145,7 +152,7 @@ public:
             break;
         case turnPhase::move:
             log(logType::INFO, "Moving Phase");
-            std::cout << "MOVE" << std::endl;
+            TerminalIOproxy::getRef().pushOutput("MOVE");
             moveTeam(getTeamNextMove());
             draw();
             break;

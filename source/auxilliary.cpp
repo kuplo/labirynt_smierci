@@ -32,6 +32,22 @@ unsigned dice3(int nextResult) {
     }
     plannedResults.push(nextResult);
     return 0;
+}
 
-
+namespace Aux
+{
+    char Convert_(tileBoundaryType tbT)
+    {
+        switch (tbT)
+        {
+        case tileBoundaryType::corridor:
+            return 'c';
+        case tileBoundaryType::blocked:
+            return 'b';
+        case tileBoundaryType::passage:
+            return 'p';
+        default:
+            return 'n';
+        }
+    }
 }

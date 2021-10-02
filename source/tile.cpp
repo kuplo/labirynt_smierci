@@ -67,9 +67,8 @@ void tile::loadTile(const std::string& fileName,std::array<tileBoundaryType,4> p
         unsigned i = 0;
         while (std::getline(tileFile, line))
         {
-            unsigned j = 0;
-            for (int j = 0; j < 5; j++) {
-                shape[j][4-i] = line[j];
+            for (unsigned j = 0; j < 5; j++) {
+                shape[i][j] = line[j];
             }
             i++;
         }

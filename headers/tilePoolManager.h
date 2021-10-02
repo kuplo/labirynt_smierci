@@ -20,7 +20,7 @@ class tilePoolManager: public reportableObject {
     void addNewPool(std::string tName, unsigned number);
     tile* tileCreator(int id, tileType tT);
 public:
-    tile& getNewTile(std::array<tileBoundaryType, 4> boundaries);
+    tile& getNewTile(std::array<tileBoundaryType, 4> const& boundaries);
     tilePoolManager();
     ~tilePoolManager();
 };

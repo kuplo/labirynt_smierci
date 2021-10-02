@@ -13,8 +13,8 @@ public:
 
     virtual void FillTerminalCharBoard() = 0;
 
+    static const int cBoardSize = 40;
 protected:
 	friend class TerminalGUI;
-	static const int cBoardSize = 40;
 	char terminalCharBoard[cBoardSize][cBoardSize];
 };

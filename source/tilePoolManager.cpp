@@ -1,7 +1,68 @@
 #include "./../headers/tilePoolManager.h"
+#include "./../TerminalIO/headers/TerminalIOProxy.h"
 
+namespace helpers
+{
+    bool boundariesMatch(
+        std::array<tileBoundaryType, 4> const& proposedBorders,
+        std::array<tileBoundaryType, 4> const& requiredBorders)
+    {
+        bool bBoundariesMatch = true;
+        for(unsigned i=0; i<4; i++)
+        {
+            bool bm = proposedBorders[i] == requiredBorders[i] || requiredBorders[i] == tileBoundaryType::clear;
+            bBoundariesMatch = bBoundariesMatch && bm;
+        }
+        return bBoundariesMatch;
+    }
 
-
+    void establishRotation(tile& newTile,  std::array<tileBoundaryType, 4> const& requiredBorders)
+    {
+        auto printTile = [&]()
+        {
+            for(int i=0;i<5;i++)
+            {
+                std::string line;
+                for(int j=0;j<5;j++)
+                {
+                    line.push_back(newTile.shape[i][j]);
+                }
+                TerminalIOproxy::getRef().pushOutput(line, false);
+            }
+        
+            TerminalIOproxy::getRef().pushOutput("rotate: R, place: E", true);   
+        };
+       
+       bool bRotationEstablished = false;
+       printTile();
+       while(!bRotationEstablished)
+       {
+            char charInput = TerminalIOproxy::getRef().getInput();
+            switch (charInput)
+            {
+            case 'R':
+            case 'r':
+                newTile.rotate(tileRotation::x1);
+                printTile();
+                break;
+            case 'E':
+            case 'e':
+                if(boundariesMatch(newTile.boundaries, requiredBorders))
+                {
+                    bRotationEstablished = true;
+                }
+                else
+                {
+                    TerminalIOproxy::getRef().pushOutput("This tile can not be placed that way!", false);
+                    printTile();
+                }
+                break;
+            default:
+                break;
+            }   
+       }
+    }
+}
 
 tilePoolManager::tilePoolManager() {
     objectName = "tilePoolManager";
@@ -75,7 +136,7 @@ tile* tilePoolManager::tileCreator(int id, tileType tT) {
     return tmp;
 }
 
-tile& tilePoolManager::getNewTile(std::array<tileBoundaryType, 4> boundaries) {
+tile& tilePoolManager::getNewTile(std::array<tileBoundaryType, 4> const& boundaries) {
     static unsigned retries = 0;
 
     unsigned amountInPools = 0;
@@ -100,32 +161,25 @@ tile& tilePoolManager::getNewTile(std::array<tileBoundaryType, 4> boundaries) {
         if (checkifTileFitOnBoard(boundaries, choosenTilePool->boundaries))matchingRotations.push_back(static_cast<tileRotation>(i));
         rotateTileBoundaryTypeArray(choosenTilePool->boundaries);
     }
-  //  exit(0);
+
     if (!matchingRotations.size()) {
         if (retries == 100) {
             retries = 0;
             log(logType::WARNING, "can't get suitable tile");
-            std::cout << "Cant get matching tile in that direction" << std::endl;
-            exit(0);
+            TerminalIOproxy::getRef().pushOutput("Cant get matching tile in that direction");
+            throw std::runtime_error("Unable to get matching tile!");
         }
         retries++;
         return getNewTile(boundaries);
     }
     retries = 0;
-    std::cout << "new tile is: " << tileName << std::endl;
-    std::cout << "rotation available: ";
-    for (int i = 0; i < matchingRotations.size(); i++) {
-        std::cout << matchingRotations[i] << ' ';
-    }
-    std::cout << " choose" << std::endl;
-    unsigned choice;
-    std::cin >> choice;
-    
-    std::cout << choice << std::endl;
-    tile* Tile = tileCreator(tileUsedOnBoard.size() + 1, choosenTilePool->TileType);
-    Tile->loadTile(tileName, choosenTilePool->boundaries, static_cast<tileRotation>(choice));
+    TerminalIOproxy::getRef().pushOutput("new tile is: " + tileName, false);
+    tile* newTile = tileCreator(tileUsedOnBoard.size() + 1, choosenTilePool->TileType);
+    newTile->loadTile(tileName, choosenTilePool->boundaries, tileRotation::x0);
     choosenTilePool->amount--;
-    return *Tile;
+    
+    helpers::establishRotation(*newTile, boundaries);
+    return *newTile;
 }
 
 tileType deduceTileType(char ch) {

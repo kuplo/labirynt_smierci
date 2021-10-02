@@ -1,2 +1,4 @@
 *.out
 log.txt
+.vscode/
+build/

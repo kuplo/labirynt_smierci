@@ -33,11 +33,14 @@ void MapDrawer::FillTerminalCharBoard()
 }
 
 void MapDrawer::AddTile_(tile& Tile, unsigned startingX, unsigned startingY)
-{
+{		//FixMe: do not rotate the tile and then reverse it ...
+		Tile.rotate(tileRotation::x3);
 	    for (int i = 0; i < 5; i++) {
 	        for (int j = 0; j < 5; j++) {
+				
 	        	terminalCharBoard[startingX + i][startingY + j] = Tile.shape[i][j];
 	        }
 	    }
+		Tile.rotate(tileRotation::x1);
 	    if (Tile.isOccupiedByMonsters())  terminalCharBoard[startingX + 3][startingY + 3] = 'M';
 }

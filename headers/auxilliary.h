@@ -17,8 +17,11 @@ enum class turnPhase {init,move,passageTrap,monsterEncounter, battle,tileInspect
 
 void rotateTileBoundaryTypeArray(std::array<tileBoundaryType, 4>& boundaries);
 extern std::stringstream GUIstream;
-//class test_class;
+
 unsigned dice6(int nextResult=-1);
 unsigned dice3(int nextResult=-1);
 
-
+namespace Aux
+{
+    char Convert_(tileBoundaryType tbT);
+}
